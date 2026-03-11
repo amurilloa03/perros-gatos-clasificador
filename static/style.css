@@ -81,8 +81,9 @@ body {
 }
 
 .container {
-    width: 90%;
-    max-width: 600px;
+    width: 95%;
+    max-width: 1000px;
+    /* Más ancho para la comparativa */
     padding: 2rem 0;
 }
 
@@ -187,7 +188,10 @@ select:focus {
 .preview-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    /* Para que la imagen no se estire */
+    background: rgba(0, 0, 0, 0.2);
+    /* Fondo sutil para rellenar huecos si la foto es rara */
 }
 
 .remove-btn {
@@ -241,6 +245,47 @@ select:focus {
     padding-top: 2rem;
     border-top: 1px solid var(--border);
     animation: fadeIn 0.5s ease-out;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.result-card {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.result-card:hover {
+    transform: translateY(-5px);
+    background: rgba(15, 23, 42, 0.6);
+    border-color: var(--primary);
+}
+
+.model-name {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 0.8rem;
+    display: block;
+}
+
+.prediction-label {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(to right, #fff, var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 @keyframes fadeIn {

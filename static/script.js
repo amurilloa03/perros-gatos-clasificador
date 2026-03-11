@@ -6,11 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagePreview = document.getElementById('image-preview');
     const removeBtn = document.getElementById('remove-btn');
     const predictBtn = document.getElementById('predict-btn');
-    const modelSelect = document.getElementById('model-select');
     const results = document.getElementById('results');
-    const predictionLabel = document.getElementById('prediction-label');
-    const confidenceBar = document.getElementById('confidence-bar');
-    const confidenceText = document.getElementById('confidence-text');
     const loader = document.getElementById('loader');
 
     let selectedFile = null;
@@ -77,13 +73,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formData = new FormData();
         formData.append('file', selectedFile);
-        formData.append('model_id', modelSelect.value);
 
         loader.classList.remove('hidden');
         results.classList.add('hidden');
 
         try {
-            const response = await fetch('/predict', {
+            // Ahora usamos /predict_all para obtener todos los resultados
+            const response = await fetch('/predict_all', {
                 method: 'POST',
                 body: formData
             });
@@ -97,25 +93,43 @@ document.addEventListener('DOMContentLoaded', () => {
             displayResults(data);
         } catch (error) {
             console.error('Error:', error);
-            alert('Error al realizar la predicción: ' + error.message);
+            alert('Error al realizar la comparativa: ' + error.message);
         } finally {
             loader.classList.add('hidden');
         }
     });
 
-    function displayResults(data) {
-        predictionLabel.textContent = data.prediction;
+    function displayResults(dataList) {
+        const grid = document.getElementById('comparison-grid');
+        grid.innerHTML = ''; // Limpiar resultados anteriores
 
-        // Animación de la barra de confianza
-        confidenceBar.style.width = '0%';
+        dataList.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'result-card';
+
+            card.innerHTML = `
+                <span class="model-name">${item.name}</span>
+                <div class="prediction-label">${item.prediction}</div>
+                <div class="confidence-container">
+                    <div class="confidence-bar-bg">
+                        <div class="confidence-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <span class="confidence-val">${item.confidence}%</span>
+                </div>
+            `;
+
+            grid.appendChild(card);
+
+            // Animación de la barra después de un pequeño delay
+            setTimeout(() => {
+                const bar = card.querySelector('.confidence-bar-fill');
+                bar.style.width = `${item.confidence}%`;
+            }, 100);
+        });
+
         results.classList.remove('hidden');
 
-        setTimeout(() => {
-            confidenceBar.style.width = `${data.confidence}%`;
-            confidenceText.textContent = `${data.confidence}% confianza`;
-        }, 100);
-
-        // Scroll suave a los resultados
+        // Scroll suave
         results.scrollIntoView({ behavior: 'smooth' });
     }
 });

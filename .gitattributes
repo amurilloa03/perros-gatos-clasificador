@@ -36,3 +36,4 @@ saved_model/**/* filter=lfs diff=lfs merge=lfs -text
 modelos/modelo_basico_color.keras filter=lfs diff=lfs merge=lfs -text
 modelos/modelo_cnn_bn.keras filter=lfs diff=lfs merge=lfs -text
 modelos/modelo_data_aug_color.keras filter=lfs diff=lfs merge=lfs -text
+modelos/modelo_cnn_bn_dropout.keras filter=lfs diff=lfs merge=lfs -text

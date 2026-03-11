@@ -20,19 +20,12 @@
 
     <main class="container">
         <header>
-            <h1>Classifier <span class="accent">AI</span></h1>
-            <p class="subtitle">Clasificador de Perros y Gatos usando Redes Neuronales Profundas</p>
+            <h1>Model <span class="accent">Scanner</span></h1>
+            <p class="subtitle">Comparativa en tiempo real de 4 arquitecturas neuronales</p>
         </header>
 
         <section class="main-card">
-            <div class="model-selection">
-                <label for="model-select">Selecciona el Modelo:</label>
-                <select id="model-select">
-                    <option value="basico">Modelo Básico (Color)</option>
-                    <option value="cnn_bn">CNN cen blanco y negro</option>
-                    <option value="data_aug">Modelo con Data Augmentation</option>
-                </select>
-            </div>
+            <!-- Eliminamos el selector individual porque ahora los mostramos todos -->
 
             <div class="upload-area" id="drop-zone">
                 <div class="upload-content" id="upload-content">
@@ -63,16 +56,10 @@
 
             <div class="results hidden" id="results">
                 <div class="result-header">
-                    <h2>Resultado</h2>
+                    <h2>Comparativa de Modelos</h2>
                 </div>
-                <div class="result-body">
-                    <div class="prediction-label" id="prediction-label">---</div>
-                    <div class="confidence-container">
-                        <div class="confidence-bar-bg">
-                            <div class="confidence-bar-fill" id="confidence-bar"></div>
-                        </div>
-                        <span id="confidence-text">0% confianza</span>
-                    </div>
+                <div class="comparison-grid" id="comparison-grid">
+                    <!-- Las tarjetas de cada modelo se generarán aquí con JS -->
                 </div>
             </div>
         </section>
