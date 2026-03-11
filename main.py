@@ -81,19 +81,22 @@ def load_model(model_id):
         print(f"--- Intentando cargar modelo: {path} ---")
         try:
             # Definir objetos personalizados comunes
-            # El modelo BN tiene una capa Lambda que usa tf.image.rgb_to_grayscale
             custom_objs = {
                 'tf': tf,
                 'np': np,
                 'rgb_to_grayscale': rgb_to_grayscale_wrapper,
-                'lambda': rgb_to_grayscale_wrapper  # A veces se busca con este nombre
+                'lambda': rgb_to_grayscale_wrapper
             }
             
-            # Cargamos el modelo permitiendo objetos personalizados y deserialización insegura
+            # Cargamos el modelo SIN COMPILAR (compile=False). 
+            # Esto evita que se quede atascado en la construcción del grafo de optimización,
+            # lo cual es útil si solo queremos hacer predicciones.
+            print("Llamando a tf.keras.models.load_model con compile=False...")
             models[model_id] = tf.keras.models.load_model(
                 path, 
                 custom_objects=custom_objs, 
-                safe_mode=False
+                safe_mode=False,
+                compile=False
             )
             print(f"--- Modelo {model_id} cargado con éxito ---")
         except Exception as e:
