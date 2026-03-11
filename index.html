@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificador Perros vs Gatos</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <main class="container">
+        <header>
+            <h1>Classifier <span class="accent">AI</span></h1>
+            <p class="subtitle">Clasificador de Perros y Gatos usando Redes Neuronales Profundas</p>
+        </header>
+
+        <section class="main-card">
+            <div class="model-selection">
+                <label for="model-select">Selecciona el Modelo:</label>
+                <select id="model-select">
+                    <option value="basico">Modelo Básico (Color)</option>
+                    <option value="cnn_bn">CNN cen blanco y negro</option>
+                    <option value="data_aug">Modelo con Data Augmentation</option>
+                </select>
+            </div>
+
+            <div class="upload-area" id="drop-zone">
+                <div class="upload-content" id="upload-content">
+                    <div class="icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                    </div>
+                    <p>Arrastra una imagen o <span>haz clic para subir</span></p>
+                    <input type="file" id="file-input" accept="image/*" hidden>
+                </div>
+                <div class="preview-container hidden" id="preview-container">
+                    <img id="image-preview" src="" alt="Vista previa">
+                    <button class="remove-btn" id="remove-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button class="predict-btn" id="predict-btn" disabled>Analizar Imagen</button>
+
+            <div class="results hidden" id="results">
+                <div class="result-header">
+                    <h2>Resultado</h2>
+                </div>
+                <div class="result-body">
+                    <div class="prediction-label" id="prediction-label">---</div>
+                    <div class="confidence-container">
+                        <div class="confidence-bar-bg">
+                            <div class="confidence-bar-fill" id="confidence-bar"></div>
+                        </div>
+                        <span id="confidence-text">0% confianza</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Proyecto Deep Learning - UT4</p>
+        </footer>
+    </main>
+
+    <div id="loader" class="loader-overlay hidden">
+        <div class="spinner"></div>
+        <p>Procesando con la Red Neuronal...</p>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
