@@ -46,18 +46,7 @@ except:
     except:
         pass
 
-def load_model(model_id):
-    if model_id not in models:
-        path = MODEL_PATHS.get(model_id)
-        if not path or not os.path.exists(path):
-            raise HTTPException(status_code=404, detail="Modelo no encontrado")
-        print(f"Cargando modelo: {path}...")
-        # Intentar cargar con safe_mode=False si la función lo soporta
-        try:
-            models[model_id] = tf.keras.models.load_model(path, safe_mode=False)
-        except TypeError:
-            models[model_id] = tf.keras.models.load_model(path)
-    return models[model_id]
+import traceback
 
 def preprocess_image(image_bytes):
     # Abrir la imagen con PIL
@@ -80,32 +69,64 @@ def preprocess_image(image_bytes):
     
     return img_array
 
+def rgb_to_grayscale_wrapper(x):
+    return tf.image.rgb_to_grayscale(x)
+
+def load_model(model_id):
+    if model_id not in models:
+        path = MODEL_PATHS.get(model_id)
+        if not path or not os.path.exists(path):
+            raise HTTPException(status_code=404, detail="Modelo no encontrado")
+        
+        print(f"--- Intentando cargar modelo: {path} ---")
+        try:
+            # Definir objetos personalizados comunes
+            # El modelo BN tiene una capa Lambda que usa tf.image.rgb_to_grayscale
+            custom_objs = {
+                'tf': tf,
+                'np': np,
+                'rgb_to_grayscale': rgb_to_grayscale_wrapper,
+                'lambda': rgb_to_grayscale_wrapper  # A veces se busca con este nombre
+            }
+            
+            # Cargamos el modelo permitiendo objetos personalizados y deserialización insegura
+            models[model_id] = tf.keras.models.load_model(
+                path, 
+                custom_objects=custom_objs, 
+                safe_mode=False
+            )
+            print(f"--- Modelo {model_id} cargado con éxito ---")
+        except Exception as e:
+            print(f"!!! Error CRÍTICO cargando modelo {model_id} !!!")
+            print(traceback.format_exc())
+            raise HTTPException(status_code=500, detail=f"Error cargando modelo {model_id}: {str(e)}")
+            
+    return models[model_id]
+
 @app.post("/predict")
 async def predict(file: UploadFile = File(...), model_id: str = Form("basico")):
+    print(f"--- Nueva petición recibida para el modelo: {model_id} ---")
     if model_id not in MODEL_PATHS:
         raise HTTPException(status_code=400, detail="ID de modelo inválido")
     
     try:
         # Leer el contenido de la imagen
         contents = await file.read()
+        print(f"Imagen leída: {len(contents)} bytes")
         
         # Preprocesar la imagen
         input_data = preprocess_image(contents)
+        print(f"Preprocesamiento completado. Input shape: {input_data.shape}")
         
         # Cargar el modelo deseado
         model = load_model(model_id)
         
         # Realizar la predicción
+        print("Ejecutando predicción...")
         prediction = model.predict(input_data)
+        print("Predicción completada.")
         
-        # En clasificación binaria Perros vs Gatos:
-        # Típicamente 0 = Gato, 1 = Perro (o viceversa, depende del entrenamiento)
-        # Asumiendo sigmoide en la salida (1 neurona)
         score = float(prediction[0][0])
-        
-        # Definir la etiqueta basada en el score (umbral 0.5)
-        # Adaptar según cómo se entrenó el modelo. 
-        # Normalmente: Gato < 0.5, Perro >= 0.5
         label = "Perro" if score >= 0.5 else "Gato"
         confidence = score if score >= 0.5 else 1.0 - score
         
@@ -117,6 +138,8 @@ async def predict(file: UploadFile = File(...), model_id: str = Form("basico")):
         }
         
     except Exception as e:
+        print(f"!!! Error durante la ejecución de la predicción !!!")
+        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/")
